@@ -8,15 +8,13 @@ import ru.kettuproj.packager.annotation.Protocol
 class TextPacket : Packet {
 
     var name: String = ""
-
     constructor(buf: ByteBuf) : super(buf){
-        name = readString()
+        name = readString() //Read string
     }
 
     constructor(
         name: String
     ) : super(){
-        this.name = name
-        writeString(name)
+        writeString(name) //Put string
     }
 }
