@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/QwertyMo/Packager.svg)](https://jitpack.io/#QwertyMo/Packager)
+
 # Packager
 Packet byte array system
 
@@ -48,3 +50,24 @@ val packetIn  = manager.readPacket(packetOut.toByteBuff()) as TextPacket
 ```
 
 So, we create our packet at variable **packetOut**. We can send it via websocket as ByteBuf, and receive it in **packetIn**. Now, we can get all data, contains in this packet
+
+# Implementation
+
+Step 1. Add the JitPack repository to your build file
+
+```
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
+Step 2. Add the dependency
+
+```
+dependencies {
+    implementation 'com.github.QwertyMo:Packager:{version}'
+}
+```
