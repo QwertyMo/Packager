@@ -14,10 +14,8 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
-    implementation("io.netty:netty-all:4.1.82.Final")
+    implementation("io.netty:netty-buffer:4.1.90.Final")
 }
 
 tasks.test {

@@ -8,13 +8,21 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.findAnnotation
 
+/**
+ * Packet register and read manager. All packets must register here.
+ *
+ * @author QwertyMo
+ */
 class PacketManager(){
     private val packets : MutableMap<Int, KClass<*>> = mutableMapOf()
 
-    init{
-
-    }
-
+    /**
+     * Register packet function
+     *
+     * @param packet class of packet
+     *
+     * @author QwertyMo
+     */
     fun registerPacket(packet: KClass<*>){
         if(packet.java.constructors.size!=2)
             throw PacketException("Error creating instance without 2 constructors from $packet")
@@ -24,17 +32,19 @@ class PacketManager(){
         packets[id] = packet
     }
 
+    /**
+     * Read packet class. Get byte buffer, and return registered packet. If packet
+     * from this byte buffer is not registered, return null
+     *
+     * @param bytes byte buffer with packet
+     *
+     * @return packet or null, if not exists
+     *
+     * @author QwertyMo
+     */
     fun readPacket(bytes: ByteBuf) : Packet?{
         val packet = packets[getProtocol(bytes)] ?: return null
         return try {
-            println(packet.constructors.first {
-                    construct ->
-                val i = construct.parameters.filter {
-                        param ->
-                    param.type == io.netty.buffer.ByteBuf::class.createType()
-                }
-                i.size == 1
-            })
             packet.constructors.first {
                     construct ->
                     val i = construct.parameters.filter {

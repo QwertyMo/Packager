@@ -32,7 +32,7 @@ abstract class Packet{
         return javaClass.simpleName
     }
 
-    fun getProtocol():Int{
+    fun getID():Int{
         return protocol
     }
 
