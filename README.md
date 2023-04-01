@@ -7,7 +7,7 @@ Packet byte array system
 First of all, you need to create packet. Example of packet, contains string 
 
 
-```
+```kotlin
 @Protocol(1) //ID of packet
 class TextPacket : Packet {
 
@@ -28,7 +28,7 @@ Annotation @Protocol indicates, that this packet has ID 1. This ID writes to fir
 
 Then, we need to initialize our packet manager and this packet 
 
-```
+```kotlin
 private val manager: PacketManager = PacketManager()
 
 init {
@@ -38,14 +38,14 @@ init {
 
 After that, we can write our packets...
 
-```
+```kotlin
 val string = "Test string"
 val packetOut = TextPacket(string)
 ```
 
 ...and read this packet
 
-```
+```kotlin
 val packetIn  = manager.readPacket(packetOut.toByteBuff()) as TextPacket
 ```
 
@@ -55,10 +55,9 @@ So, we create our packet at variable **packetOut**. We can send it via websocket
 
 Step 1. Add the JitPack repository to your build file
 
-```
+```gradle
 allprojects {
     repositories {
-        ...
         maven { url 'https://jitpack.io' }
     }
 }
@@ -66,7 +65,7 @@ allprojects {
 
 Step 2. Add the dependency
 
-```
+```gradle
 dependencies {
     implementation 'com.github.QwertyMo:Packager:{version}'
 }
