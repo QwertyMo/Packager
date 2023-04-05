@@ -12,7 +12,7 @@ First of all, you need to create packet. Example of packet, contains string
 class TextPacket : Packet {
 
     var name: String = ""
-    constructor(buf: ByteBuf) : super(buf){
+    constructor(buf: ByteArray) : super(buf){
         name = readString() //Read string 
     }
 
@@ -46,7 +46,7 @@ val packetOut = TextPacket(string)
 ...and read this packet
 
 ```kotlin
-val packetIn  = manager.readPacket(packetOut.toByteBuff()) as TextPacket
+val packetIn  = manager.readPacket(packetOut.toByteArray()) as TextPacket
 ```
 
 So, we create our packet at variable **packetOut**. We can send it via websocket as ByteBuf, and receive it in **packetIn**. Now, we can get all data, contains in this packet
