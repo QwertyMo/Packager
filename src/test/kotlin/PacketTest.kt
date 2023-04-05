@@ -17,7 +17,7 @@ class PacketTest {
     fun testText(){
         val string = "Test string"
         val packetOut = TextPacket(string)
-        val packetIn  = manager.readPacket(packetOut.toByteBuff()) as TextPacket
+        val packetIn  = manager.readPacket(packetOut.toByteArray()) as TextPacket
         assertEquals(string, packetIn.name)
     }
 
@@ -31,7 +31,7 @@ class PacketTest {
         val c: Char = 'f'
         val l: Long = 7861240978134
         val packetOut = MultiDataPacket(s, i, f, d, b, c, l)
-        val packetIn  = manager.readPacket(packetOut.toByteBuff()) as MultiDataPacket
+        val packetIn  = manager.readPacket(packetOut.toByteArray()) as MultiDataPacket
         assertEquals(s, packetIn.s)
         assertEquals(i, packetIn.i)
         assertEquals(f, packetIn.f)

@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "ru.kettuproj"
-version = "1.0.3"
+version = "1.0.4"
 
 repositories {
     mavenCentral()
@@ -37,7 +37,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "ru.kettuproj"
             artifactId = "Packager"
-            version = "1.0.3"
+            version = "1.0.4"
 
             from(components["java"])
         }

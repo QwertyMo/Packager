@@ -1,6 +1,5 @@
 package packet
 
-import io.netty.buffer.ByteBuf
 import ru.kettuproj.packager.Packet
 import ru.kettuproj.packager.annotation.Protocol
 
@@ -15,7 +14,7 @@ class MultiDataPacket : Packet {
     var c: Char = ' '
     var l: Long = 0
 
-    constructor(buf: ByteBuf) : super(buf){
+    constructor(buf: ByteArray) : super(buf){
         s = readString()
         i = readInt()
         f = readFloat()

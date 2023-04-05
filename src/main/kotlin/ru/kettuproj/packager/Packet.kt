@@ -23,9 +23,9 @@ abstract class Packet{
         writeInt(protocol)
     }
 
-    constructor(buf: ByteBuf){
-        this.buf = buf
-        protocol = buf.readInt()
+    constructor(buf: ByteArray){
+        this.buf = Unpooled.wrappedBuffer(buf)
+        protocol = this.buf.readInt()
     }
 
     override fun toString(): String {

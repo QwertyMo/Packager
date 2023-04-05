@@ -1,6 +1,6 @@
 package ru.kettuproj.packager
 
-import io.netty.buffer.ByteBuf
+import io.netty.buffer.Unpooled
 import ru.kettuproj.packager.annotation.Protocol
 import ru.kettuproj.packager.exception.PacketException
 import java.lang.Exception
@@ -42,14 +42,14 @@ class PacketManager(){
      *
      * @author QwertyMo
      */
-    fun readPacket(bytes: ByteBuf) : Packet?{
+    fun readPacket(bytes: ByteArray) : Packet?{
         val packet = packets[getProtocol(bytes)] ?: return null
         return try {
             packet.constructors.first {
                     construct ->
                     val i = construct.parameters.filter {
                         param ->
-                        param.type == io.netty.buffer.ByteBuf::class.createType()
+                        param.type == ByteArray::class.createType()
                     }
                     i.size == 1
             }.call(bytes) as Packet?
@@ -59,9 +59,9 @@ class PacketManager(){
         }
     }
 
-    private fun getProtocol(bytes: ByteBuf): Int?{
+    private fun getProtocol(bytes: ByteArray): Int?{
         return try{
-            bytes.copy().readInt()
+            Unpooled.copiedBuffer(bytes).readInt()
         }catch (e: Exception){
             null
         }
