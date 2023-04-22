@@ -37,7 +37,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "ru.kettuproj"
             artifactId = "Packager"
-            version = "1.0.4"
+            version = "1.0.5"
 
             from(components["java"])
         }
