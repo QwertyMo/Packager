@@ -51,6 +51,48 @@ val packetIn  = manager.readPacket(packetOut.toByteArray()) as TextPacket
 
 So, we create our packet at variable **packetOut**. We can send it via websocket as ByteBuf, and receive it in **packetIn**. Now, we can get all data, contains in this packet
 
+# Packaging custom objects
+
+Sometimes, you need to send array of custom object. For this you can use **Packable** class
+
+```kotlin
+class Player : Packable {
+    var name: String = ""
+    var maxHP: Int = -1
+    constructor(buf: ByteArray) : super(buf){
+        name = readString()
+        maxHP = readInt()
+    }
+
+    constructor(
+        name: String,
+        maxHP: Int,
+    ) : super(){
+        writeString(name)
+        writeInt(maxHP)
+    }
+}
+```
+Now, we have our custom class, which we can apply to package
+
+```kotlin
+@Protocol(4)
+class PlayersPacket : Packet {
+    var players: List<Player> = emptyList()
+    constructor(buf: ByteArray) : super(buf){
+        players = readPackableList()
+    }
+
+    constructor(
+        players: List<Player>
+    ) : super(){
+        writeList(players)
+    }
+}
+```
+And we can send this packet as before
+
+
 # Implementation
 
 Step 1. Add the JitPack repository to your build file

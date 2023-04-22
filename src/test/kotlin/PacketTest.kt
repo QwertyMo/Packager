@@ -1,7 +1,6 @@
+import model.Player
 import org.junit.jupiter.api.Test
-import packet.ListPacket
-import packet.MultiDataPacket
-import packet.TextPacket
+import packet.*
 import ru.kettuproj.packager.PacketManager
 import kotlin.test.assertEquals
 
@@ -13,6 +12,8 @@ class PacketTest {
         manager.registerPacket(TextPacket::class)
         manager.registerPacket(MultiDataPacket::class)
         manager.registerPacket(ListPacket::class)
+        manager.registerPacket(PlayerPacket::class)
+        manager.registerPacket(PlayersPacket::class)
     }
 
     @Test
@@ -44,7 +45,7 @@ class PacketTest {
     }
 
     @Test
-    fun restList(){
+    fun testList(){
         val s: List<String> = listOf("1", "234", "543112")
         val i: List<Int> = listOf(1, 432, 1153, 42, 123)
         val f: List<Float> = listOf(1f, 432f, 1153f, 42f, 123f)
@@ -61,6 +62,37 @@ class PacketTest {
         assertEquals(b, packetIn.b)
         assertEquals(c, packetIn.c)
         assertEquals(l, packetIn.l)
+    }
+
+    @Test
+    fun testPackable(){
+        val s = "test"
+        val player = Player("QwertyMo", 100, 23, 5123412)
+        val packetOut = PlayerPacket(player, s)
+        val packetIn  = manager.readPacket(packetOut.toByteArray()) as PlayerPacket
+        assertEquals(player.name, packetIn.player.name)
+        assertEquals(player.maxHP, packetIn.player.maxHP)
+        assertEquals(player.curHP, packetIn.player.curHP)
+        assertEquals(player.id, packetIn.player.id)
+        assertEquals(s, packetIn.s)
+    }
+
+    @Test
+    fun testListOfPlayers(){
+        val players = listOf(
+            Player("QwertyMo", 100, 23, 1),
+            Player("QwertyMo", 230, 11, 2),
+            Player("QwertyMo", 22, 1, 3)
+        )
+        val packetOut = PlayersPacket(players)
+        val packetIn  = manager.readPacket(packetOut.toByteArray()) as PlayersPacket
+        for(player in players){
+            val p = packetIn.players.find { it.id == player.id }!!
+            assertEquals(p.id, player.id)
+            assertEquals(p.maxHP, player.maxHP)
+            assertEquals(p.curHP, player.curHP)
+            assertEquals(p.name, player.name)
+        }
     }
 }
 

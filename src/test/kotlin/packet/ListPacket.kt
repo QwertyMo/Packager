@@ -22,7 +22,6 @@ class ListPacket : Packet {
         b = readBoolList()
         c = readCharList()
         l = readLongList()
-        println("$s $i $f $d $b $c $l")
     }
 
     constructor(

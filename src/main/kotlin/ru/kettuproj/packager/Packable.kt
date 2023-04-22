@@ -2,40 +2,18 @@ package ru.kettuproj.packager
 
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
-import ru.kettuproj.packager.annotation.Protocol
-import ru.kettuproj.packager.exception.PacketException
 import java.nio.charset.StandardCharsets
-import kotlin.reflect.full.createType
-import kotlin.reflect.full.findAnnotation
 
-/**
- * Byte packet class. All packets need to be extended by this class
- *
- * @author QwertyMo
- */
-abstract class Packet{
-
-    var buf: ByteBuf
-    private var protocol: Int
-
-    constructor(){
-        this.protocol = this::class.findAnnotation<Protocol>()?.protocol ?: throw PacketException("Can't get protocol id from ${this::class.simpleName}")
-        buf = Unpooled.buffer()
-        writeInt(protocol)
-    }
+abstract class Packable{
+    private var buf: ByteBuf = Unpooled.buffer()
+    val accumulator: Int
+        get() = buf.readerIndex()
 
     constructor(buf: ByteArray){
         this.buf = Unpooled.wrappedBuffer(buf)
-        protocol = this.buf.readInt()
     }
 
-    override fun toString(): String {
-        return javaClass.simpleName
-    }
-
-    fun getID():Int{
-        return protocol
-    }
+    constructor()
 
     fun toByteArray(): ByteArray {
         val size = if(buf.writerIndex() != 0) buf.writerIndex()
@@ -58,19 +36,8 @@ abstract class Packet{
                 is Char     -> writeChar(i)
                 is Double   -> writeDouble(i)
                 is Long     -> writeLong(i)
-                is Packable -> writePackable(i)
             }
         }
-    }
-
-    inline fun <reified T : Packable> readPackableList():List<T>{
-        val size = readInt()
-        val list = mutableListOf<T>()
-        for(i in 0 until size) {
-            val data = readPackable<T>()
-            if(data != null) list.add(data)
-        }
-        return list
     }
 
     fun readLongList(): List<Long>{
@@ -196,25 +163,4 @@ abstract class Packet{
     fun readDouble():Double{
         return buf.readDouble()
     }
-
-    fun <T : Packable> writePackable(value: T){
-        buf.writeBytes(value.toByteArray())
-    }
-
-    inline fun <reified T : Packable> readPackable(): T?{
-        return try{
-            val data = T::class.constructors.find { construct ->
-                val i = construct.parameters.filter { param ->
-                    param.type == ByteArray::class.createType()
-                }
-                i.size == 1
-            }?.call(buf.array().copyOfRange(buf.readerIndex(), buf.capacity()))
-            buf.readerIndex(buf.readerIndex() + (data?.accumulator ?: 0))
-            data
-        }catch (e: Exception){
-            e.printStackTrace()
-            null
-        }
-    }
-
 }

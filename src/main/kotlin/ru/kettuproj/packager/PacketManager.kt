@@ -13,7 +13,7 @@ import kotlin.reflect.full.findAnnotation
  *
  * @author QwertyMo
  */
-class PacketManager(){
+class PacketManager{
     private val packets : MutableMap<Int, KClass<*>> = mutableMapOf()
 
     /**
@@ -45,16 +45,16 @@ class PacketManager(){
     fun readPacket(bytes: ByteArray) : Packet?{
         val packet = packets[getProtocol(bytes)] ?: return null
         return try {
-            packet.constructors.first {
+            packet.constructors.find {
                     construct ->
                     val i = construct.parameters.filter {
                         param ->
                         param.type == ByteArray::class.createType()
                     }
                     i.size == 1
-            }.call(bytes) as Packet?
+            }?.call(bytes) as Packet?
         }catch (e: Exception){
-            println(e.printStackTrace())
+            e.printStackTrace()
             null
         }
     }

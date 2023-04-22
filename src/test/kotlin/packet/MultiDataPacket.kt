@@ -22,7 +22,6 @@ class MultiDataPacket : Packet {
         b = readBool()
         c = readChar()
         l = readLong()
-        println("$s $i $f $d $b $c $l")
     }
 
     constructor(
