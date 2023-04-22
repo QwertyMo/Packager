@@ -44,6 +44,84 @@ abstract class Packet{
         return buf.copy()
     }
 
+    fun <T> writeList(value: List<T>){
+        writeInt(value.size)
+        for(i in value){
+            when(i){
+                is String   -> writeString(i)
+                is Int      -> writeInt(i)
+                is Boolean  -> writeBool(i)
+                is Float    -> writeFloat(i)
+                is Char     -> writeChar(i)
+                is Double   -> writeDouble(i)
+                is Long     -> writeLong(i)
+            }
+        }
+    }
+
+    fun readLongList(): List<Long>{
+        val size = readInt()
+        val list = mutableListOf<Long>()
+        for(i in 0 until size) {
+            list.add(readLong())
+        }
+        return list
+    }
+
+    fun readIntList(): List<Int>{
+        val size = readInt()
+        val list = mutableListOf<Int>()
+        for(i in 0 until size) {
+            list.add(readInt())
+        }
+        return list
+    }
+
+    fun readStringList(): List<String>{
+        val size = readInt()
+        val list = mutableListOf<String>()
+        for(i in 0 until size) {
+            list.add(readString())
+        }
+        return list
+    }
+
+    fun readBoolList():List<Boolean>{
+        val size = readInt()
+        val list = mutableListOf<Boolean>()
+        for(i in 0 until size) {
+            list.add(readBool())
+        }
+        return list
+    }
+
+    fun readFloatList():List<Float>{
+        val size = readInt()
+        val list = mutableListOf<Float>()
+        for(i in 0 until size) {
+            list.add(readFloat())
+        }
+        return list
+    }
+
+    fun readCharList():List<Char>{
+        val size = readInt()
+        val list = mutableListOf<Char>()
+        for(i in 0 until size) {
+            list.add(readChar())
+        }
+        return list
+    }
+
+    fun readDoubleList():List<Double>{
+        val size = readInt()
+        val list = mutableListOf<Double>()
+        for(i in 0 until size) {
+            list.add(readDouble())
+        }
+        return list
+    }
+
     fun writeInt(value: Int) {
         buf.writeInt(value)
     }
