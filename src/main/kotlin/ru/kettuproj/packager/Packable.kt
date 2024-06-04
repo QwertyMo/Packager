@@ -3,9 +3,10 @@ package ru.kettuproj.packager
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import java.nio.charset.StandardCharsets
+import kotlin.reflect.full.createType
 
 abstract class Packable{
-    private var buf: ByteBuf = Unpooled.buffer()
+    var buf: ByteBuf = Unpooled.buffer()
     val accumulator: Int
         get() = buf.readerIndex()
 
@@ -36,6 +37,7 @@ abstract class Packable{
                 is Char     -> writeChar(i)
                 is Double   -> writeDouble(i)
                 is Long     -> writeLong(i)
+                is Packable -> writePackable(i)
             }
         }
     }
@@ -162,5 +164,35 @@ abstract class Packable{
 
     fun readDouble():Double{
         return buf.readDouble()
+    }
+
+    fun <T : Packable> writePackable(value: T){
+        buf.writeBytes(value.toByteArray())
+    }
+
+    inline fun <reified T : Packable> readPackable(): T?{
+        return try{
+            val data = T::class.constructors.find { construct ->
+                val i = construct.parameters.filter { param ->
+                    param.type == ByteArray::class.createType()
+                }
+                i.size == 1
+            }?.call(buf.array().copyOfRange(buf.readerIndex(), buf.capacity()))
+            buf.readerIndex(buf.readerIndex() + (data?.accumulator ?: 0))
+            data
+        }catch (e: Exception){
+            e.printStackTrace()
+            null
+        }
+    }
+
+    inline fun <reified T : Packable> readPackableList():List<T>{
+        val size = readInt()
+        val list = mutableListOf<T>()
+        for(i in 0 until size) {
+            val data = readPackable<T>()
+            if(data != null) list.add(data)
+        }
+        return list
     }
 }

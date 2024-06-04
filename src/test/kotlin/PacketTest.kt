@@ -1,4 +1,5 @@
 import model.Player
+import model.Team
 import org.junit.jupiter.api.Test
 import packet.*
 import ru.kettuproj.packager.PacketManager
@@ -14,6 +15,7 @@ class PacketTest {
         manager.registerPacket(ListPacket::class)
         manager.registerPacket(PlayerPacket::class)
         manager.registerPacket(PlayersPacket::class)
+        manager.registerPacket(TeamPacket::class)
     }
 
     @Test
@@ -93,6 +95,28 @@ class PacketTest {
             assertEquals(p.curHP, player.curHP)
             assertEquals(p.name, player.name)
         }
+    }
+
+    @Test
+    fun testListOfTeams(){
+        val team = listOf(
+            Team(
+                "t1",listOf(
+                    Player("QwertyMo", 23, 1, 1),
+                    Player("QwertyMo", 230, 11, 2),
+                    Player("QwertyMo", 22, 1, 3)
+                )),
+            Team(
+                "t2",listOf(
+                    Player("QwertyMo", 100, 4, 1),
+                    Player("QwertyMo", 23, 11, 2),
+                    Player("QwertyMo", 22, 1, 3)
+                ))
+        )
+        val packetOut = TeamPacket(team)
+        println(packetOut.toByteArray().size)
+        val packetIn  = manager.readPacket(packetOut.toByteArray()) as TeamPacket
+        assertEquals(team.hashCode(), packetIn.team.hashCode())
     }
 }
 
