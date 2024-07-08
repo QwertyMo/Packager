@@ -6,15 +6,15 @@ import ru.kettuproj.packager.annotation.Protocol
 
 @Protocol(3)
 class PlayerPacket : Packet {
-    var player: Player = Player("", -1, -1, -1)
+    var player: Player? = null
     var s = ""
     constructor(buf: ByteArray) : super(buf){
-        player = readPackable()?:player
+        player = readPackable()
         s = readString()
     }
 
     constructor(
-        player: Player,
+        player: Player?,
         s: String
     ) : super(){
         writePackable(player)

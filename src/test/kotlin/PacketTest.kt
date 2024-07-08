@@ -72,10 +72,23 @@ class PacketTest {
         val player = Player("QwertyMo", 100, 23, 5123412)
         val packetOut = PlayerPacket(player, s)
         val packetIn  = manager.readPacket(packetOut.toByteArray()) as PlayerPacket
-        assertEquals(player.name, packetIn.player.name)
-        assertEquals(player.maxHP, packetIn.player.maxHP)
-        assertEquals(player.curHP, packetIn.player.curHP)
-        assertEquals(player.id, packetIn.player.id)
+        if(packetIn.player == null) assert(false)
+        assertEquals(player.name, packetIn.player!!.name)
+        assertEquals(player.maxHP, packetIn.player!!.maxHP)
+        assertEquals(player.curHP, packetIn.player!!.curHP)
+        assertEquals(player.id, packetIn.player!!.id)
+        assertEquals(s, packetIn.s)
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    @Test
+    fun testPackableWithNull(){
+        val s = "test"
+        val player = null
+        val packetOut = PlayerPacket(player, s)
+        val packetIn  = manager.readPacket(packetOut.toByteArray()) as PlayerPacket
+
+        assertEquals(player, packetIn.player)
         assertEquals(s, packetIn.s)
     }
 

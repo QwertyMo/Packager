@@ -28,8 +28,8 @@ abstract class Packable{
 
     fun <T> writeList(value: List<T>){
         writeInt(value.size)
-        for(i in value){
-            when(i){
+         for(i in value){
+           when(i){
                 is String   -> writeString(i)
                 is Int      -> writeInt(i)
                 is Boolean  -> writeBool(i)
@@ -166,20 +166,28 @@ abstract class Packable{
         return buf.readDouble()
     }
 
-    fun <T : Packable> writePackable(value: T){
-        buf.writeBytes(value.toByteArray())
+    fun <T : Packable?> writePackable(value: T){
+        if(value == null) buf.writeByte(-1)
+        else {
+            buf.writeByte(0)
+            buf.writeBytes(value.toByteArray())
+        }
     }
 
-    inline fun <reified T : Packable> readPackable(): T?{
+    inline fun <reified T : Packable?> readPackable(): T?{
         return try{
-            val data = T::class.constructors.find { construct ->
-                val i = construct.parameters.filter { param ->
-                    param.type == ByteArray::class.createType()
-                }
-                i.size == 1
-            }?.call(buf.array().copyOfRange(buf.readerIndex(), buf.capacity()))
-            buf.readerIndex(buf.readerIndex() + (data?.accumulator ?: 0))
-            data
+            val isNull = buf.readByte().toInt() == -1
+            if(isNull) null
+            else {
+                val data = T::class.constructors.find { construct ->
+                    val i = construct.parameters.filter { param ->
+                        param.type == ByteArray::class.createType()
+                    }
+                    i.size == 1
+                }?.call(buf.array().copyOfRange(buf.readerIndex(), buf.capacity()))
+                buf.readerIndex(buf.readerIndex() + (data?.accumulator ?: 0))
+                data
+            }
         }catch (e: Exception){
             e.printStackTrace()
             null

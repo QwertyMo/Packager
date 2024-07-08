@@ -197,20 +197,28 @@ abstract class Packet{
         return buf.readDouble()
     }
 
-    fun <T : Packable> writePackable(value: T){
-        buf.writeBytes(value.toByteArray())
+    fun <T : Packable?> writePackable(value: T){
+        if(value == null) buf.writeByte(-1)
+        else {
+            buf.writeByte(0)
+            buf.writeBytes(value.toByteArray())
+        }
     }
 
     inline fun <reified T : Packable> readPackable(): T?{
         return try{
-            val data = T::class.constructors.find { construct ->
-                val i = construct.parameters.filter { param ->
-                    param.type == ByteArray::class.createType()
-                }
-                i.size == 1
-            }?.call(buf.array().copyOfRange(buf.readerIndex(), buf.capacity()))
-            buf.readerIndex(buf.readerIndex() + (data?.accumulator ?: 0))
-            data
+            val isNull = buf.readByte().toInt() == -1
+            if(isNull) null
+            else {
+                val data = T::class.constructors.find { construct ->
+                    val i = construct.parameters.filter { param ->
+                        param.type == ByteArray::class.createType()
+                    }
+                    i.size == 1
+                }?.call(buf.array().copyOfRange(buf.readerIndex(), buf.capacity()))
+                buf.readerIndex(buf.readerIndex() + (data?.accumulator ?: 0))
+                data
+            }
         }catch (e: Exception){
             e.printStackTrace()
             null
